@@ -1,16 +1,22 @@
 from rich.console import Console
-from dotenv import load_dotenv
-import os
+
+from core.startup import startup
+from brain.router import Router
 
 console = Console()
 
-load_dotenv()
+startup()
 
-project_name = os.getenv("PROJECT_NAME")
-owner = os.getenv("OWNER_NAME")
-version = os.getenv("VERSION")
+router = Router()
 
-console.rule(f"[cyan]{project_name}v{version}")
-console.print("[green]✓ Loading Configuration...")
-console.print("[green]✓ System Ready")
-console.print(f"Welcome back, {owner}.", style= "bold cyan")
+while True:
+
+    command = console.input("\n[bold cyan]Chief > [/bold cyan]")
+
+    if command.lower() in ["exit", "quit"]:
+        console.print("[yellow]Goodbye, Chief.")
+        break
+
+    response = router.route(command)
+
+    console.print(f"[green]KAI >[/green] {response}")
