@@ -9,11 +9,14 @@ class AutomationController:
 
     def open_application(self, target: str):
 
-        application = APPLICATIONS.get(target)
+        target = target.lower().strip()
 
-        if application is None:
-            return f"I couldn't find '{target}', Chief."
+        for app in APPLICATIONS.values():
 
-        self.executor.execute(application)
+            if target in app["aliases"]:
 
-        return f"Opening {target.title()}, Chief."
+                self.executor.execute(app["command"])
+
+                return f"Opening {app['name']}, Chief."
+
+        return f"I couldn't find '{target}', Chief."
