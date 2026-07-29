@@ -1,0 +1,3 @@
+APPLICATIONS = {
+    "notepad": "notepad.exe",
+}
