@@ -7,5 +7,15 @@ APPLICATIONS = {
             "notes",
             "text editor"
         ]
+    },
+
+    "chrome": {
+        "name": "Google Chrome",
+        "command": "C:/Program Files/Google/Chrome/Application/Chrome",
+        "aliases": [
+            "chrome",
+            "google",
+            "browser"
+        ]
     }
 }
