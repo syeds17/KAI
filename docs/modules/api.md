@@ -21,3 +21,13 @@ api/
 - client.py
 - service.py
 - Brain integration
+
+## Completed
+
+- Folder structure
+- Gemini SDK installed
+- System prompt
+- Provider architecture
+- Gemini client
+- API key configuration
+- Successful text generation test

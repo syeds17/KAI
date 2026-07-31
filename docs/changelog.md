@@ -53,6 +53,10 @@
 
 ---
 
-Current Version
+## v0.0.7
 
-v0.0.6
+Added:
+- LLM module foundation
+- Gemini provider
+- Environment based configuration
+- Successful Gemini API communication
