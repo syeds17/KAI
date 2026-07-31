@@ -12,5 +12,15 @@ class IntentDetector:
 
         if command in ["how are you"]:
             return "status"
+        if command.startswith("remember "):
+            return "remember"
+
+        if command in [
+            "what do you remember",
+            "show memories",
+            "show memory",
+            "list memories"
+        ]:
+            return "recall"
 
         return "unknown"

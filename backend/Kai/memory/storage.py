@@ -44,6 +44,15 @@ class MemoryStorage:
         )
 
         return self.cursor.fetchall()
+    def memory_exists(self, content: str) -> bool:
+        """Check whether a memory already exists."""
+
+        self.cursor.execute(
+            "SELECT 1 FROM memories WHERE LOWER(content) = LOWER(?)",
+            (content,)
+        )
+
+        return self.cursor.fetchone() is not None
 
     def delete_memory(self, memory_id: int):
         """Delete a memory by ID."""

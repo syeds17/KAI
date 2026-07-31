@@ -12,5 +12,12 @@ RESPONSES = {
     ],
     "unknown": [
         "I'm not sure I understand that yet, Chief."
+    ],
+    "remember": [
+        "I'll remember that, Chief."
+    ],
+
+    "recall": [
+        "Let me check my memory..."
     ]
 }
