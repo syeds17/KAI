@@ -60,3 +60,11 @@ Added:
 - Gemini provider
 - Environment based configuration
 - Successful Gemini API communication
+
+## v0.0.8
+
+Added:
+- Brain integration with LLM Service
+- Unknown intent fallback to Gemini
+- Natural language conversations
+- AI-generated responses

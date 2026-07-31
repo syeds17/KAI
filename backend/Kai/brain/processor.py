@@ -3,12 +3,14 @@ import random
 from .intent import IntentDetector
 from .responses import RESPONSES
 from memory.manager import MemoryManager
+from api.llm.service import LLMService
 
 class CommandProcessor:
 
     def __init__(self):
         self.intent = IntentDetector()
         self.memory = MemoryManager()
+        self.llm = LLMService()
 
     def process(self, command: str) -> str:
 
@@ -39,5 +41,8 @@ class CommandProcessor:
                 lines.append(f"  {idx}. {text}")
 
             return "\n".join(lines)
+
+        if intent == "unknown":
+            return self.llm.chat(command)
 
         return random.choice(RESPONSES[intent])
