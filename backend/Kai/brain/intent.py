@@ -37,12 +37,32 @@ class IntentDetector:
                 "quit",
                 "terminate",
                 "kill"
+            ],
+            
+            "search": [
+                "find",
+                "search",
+                "locate"
+            ],
+
+            "create_folder": [
+                "create folder",
+                "make folder",
+                "new folder"
+            ],
+
+            "open_file": [
+                "open file",
+                "open folder",
+                "open"
             ]
         }
 
 
     def detect(self, command: str) -> str:
 
+        print("DETECTING:", command)
+        
         command = command.lower().strip()
 
         if command.startswith("remember "):
