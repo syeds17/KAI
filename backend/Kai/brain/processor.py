@@ -4,11 +4,13 @@ from .intent import IntentDetector
 from .responses import RESPONSES
 from memory.manager import MemoryManager
 from api.llm.service import LLMService
+from .context import ContextBuilder
 
 class CommandProcessor:
 
     def __init__(self):
         self.intent = IntentDetector()
+        self.context = ContextBuilder()
         self.memory = MemoryManager()
         self.llm = LLMService()
 
@@ -46,16 +48,8 @@ class CommandProcessor:
 
             conversations = self.memory.recent_conversations()
 
-            context = ""
-
-            if conversations:
-
-                context = "Recent Conversation:\n\n"
-
-                for user, assistant in reversed(conversations):
-                    context += f"User: {user}\n"
-                    context += f"KAI: {assistant}\n\n"
-
+            context = self.context.build(conversations)
+            
             response = self.llm.chat(command, context)
 
             self.memory.save_conversation(command, response)

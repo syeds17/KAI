@@ -1,26 +1,58 @@
 class IntentDetector:
 
+    def __init__(self):
+
+        self.rules = {
+            "greeting": [
+                "hello",
+                "hi",
+                "hey"
+            ],
+
+            "identity": [
+                "who are you",
+                "what is your name"
+            ],
+
+            "status": [
+                "how are you"
+            ],
+
+            "recall": [
+                "what do you remember",
+                "show memories",
+                "show memory",
+                "list memories"
+            ],
+
+            "open": [
+                "open",
+                "launch",
+                "start"
+            ],
+
+            "close": [
+                "close",
+                "exit",
+                "quit",
+                "terminate",
+                "kill"
+            ]
+        }
+
+
     def detect(self, command: str) -> str:
 
         command = command.lower().strip()
 
-        if command in ["hello", "hi", "hey"]:
-            return "greeting"
-
-        if command in ["who are you", "what is your name"]:
-            return "identity"
-
-        if command in ["how are you"]:
-            return "status"
         if command.startswith("remember "):
             return "remember"
 
-        if command in [
-            "what do you remember",
-            "show memories",
-            "show memory",
-            "list memories"
-        ]:
-            return "recall"
+        for intent, keywords in self.rules.items():
+
+            for keyword in keywords:
+
+                if command.startswith(keyword):
+                    return intent
 
         return "unknown"

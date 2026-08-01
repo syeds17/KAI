@@ -11,6 +11,9 @@ class Dispatcher:
     def dispatch(self, command):
 
         if command.action == "open":
-            return self.automation.open_application(command.target)
-
+            return self.automation.open(command.target)
+        
+        if command.action == "close":
+            return self.automation.close(command.target)
+        
         return self.processor.process(command.raw)

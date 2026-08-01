@@ -1,21 +1,9 @@
-APPLICATIONS = {
-    "notepad": {
-        "name": "Notepad",
-        "command": "notepad.exe",
-        "aliases": [
-            "notepad",
-            "notes",
-            "text editor"
-        ]
-    },
+from .applications import APPLICATIONS
+from .websites import WEBSITES
+from .folders import FOLDERS
 
-    "chrome": {
-        "name": "Google Chrome",
-        "command": "C:/Program Files/Google/Chrome/Application/Chrome",
-        "aliases": [
-            "chrome",
-            "google",
-            "browser"
-        ]
-    }
-}
+__all__ = [
+    "APPLICATIONS",
+    "WEBSITES",
+    "FOLDERS",
+]
