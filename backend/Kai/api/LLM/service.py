@@ -7,15 +7,18 @@ class LLMService:
     def __init__(self):
         self.client = GeminiClient()
 
-    def chat(self, user_input: str) -> str:
+    def chat(self, user_input: str, context: str = "") -> str:
 
         prompt = f"""
-{SYSTEM_PROMPT}
+    {SYSTEM_PROMPT}
 
-User:
-{user_input}
+    Conversation History:
+    {context}
 
-KAI:
-"""
+    Current User:
+    {user_input}
+
+    Respond as KAI:
+    """
 
         return self.client.generate(prompt)

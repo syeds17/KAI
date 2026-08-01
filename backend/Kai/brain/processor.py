@@ -43,6 +43,27 @@ class CommandProcessor:
             return "\n".join(lines)
 
         if intent == "unknown":
-            return self.llm.chat(command)
 
-        return random.choice(RESPONSES[intent])
+            conversations = self.memory.recent_conversations()
+
+            context = ""
+
+            if conversations:
+
+                context = "Recent Conversation:\n\n"
+
+                for user, assistant in reversed(conversations):
+                    context += f"User: {user}\n"
+                    context += f"KAI: {assistant}\n\n"
+
+            response = self.llm.chat(command, context)
+
+            self.memory.save_conversation(command, response)
+
+            return response
+
+        response = random.choice(RESPONSES[intent])
+
+        self.memory.save_conversation(command, response)
+
+        return response
