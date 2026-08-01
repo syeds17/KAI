@@ -22,3 +22,9 @@ class MemoryManager:
 
     def forget(self, memory_id: int):
         self.storage.delete_memory(memory_id)
+    
+    def save_conversation(self, user_message: str, assistant_message: str):
+        self.storage.save_conversation(user_message, assistant_message)
+
+    def recent_conversations(self, limit: int = 10):
+        return self.storage.get_recent_conversations(limit)

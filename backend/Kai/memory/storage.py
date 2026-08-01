@@ -12,15 +12,24 @@ class MemoryStorage:
         self.connection = sqlite3.connect(self.db_path)
         self.cursor = self.connection.cursor()
 
-        self.create_table()
+        self.create_tables()
 
-    def create_table(self):
-        """Create the memories table if it doesn't exist."""
+    def create_tables(self):
+        """Create all database tables."""
 
         self.cursor.execute("""
-            CREATE TABLE IF NOT EXISTS memories (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                content TEXT NOT NULL
+        CREATE TABLE IF NOT EXISTS memories (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            content TEXT NOT NULL
+            )
+        """)
+
+        self.cursor.execute("""
+        CREATE TABLE IF NOT EXISTS conversations (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_message TEXT NOT NULL,
+            assistant_message TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
 
@@ -63,3 +72,42 @@ class MemoryStorage:
         )
 
         self.connection.commit()
+    
+    def save_conversation(
+        self,
+            user_message: str,
+            assistant_message: str
+        ):
+        """Save one conversation exchange."""
+
+        self.cursor.execute(
+        """
+        INSERT INTO conversations
+        (user_message, assistant_message)
+        VALUES (?, ?)
+        """,
+        (user_message, assistant_message)
+        )
+
+        self.connection.commit()
+
+
+    def get_recent_conversations(
+        self,
+        limit: int = 10
+        ):
+        """Return recent conversations."""
+
+        self.cursor.execute(
+        """
+        SELECT
+            user_message,
+            assistant_message
+        FROM conversations
+        ORDER BY id DESC
+        LIMIT ?
+        """,
+        (limit,)
+        )
+
+        return self.cursor.fetchall()
