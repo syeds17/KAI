@@ -4,7 +4,7 @@ from .intent import IntentDetector
 from .responses import RESPONSES
 from memory.manager import MemoryManager
 from api.llm.service import LLMService
-from .context import ContextBuilder
+from .context_builder import ContextBuilder
 
 class CommandProcessor:
 

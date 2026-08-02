@@ -5,8 +5,21 @@ import webbrowser
 class Executor:
 
     def execute_application(self, command: str):
-        subprocess.Popen(command)
+        try:
 
+            if isinstance(command, str):
+                subprocess.Popen(command)
+
+            else:
+                subprocess.Popen(command)
+
+            return True
+
+        except Exception as e:
+
+            print(f"[Executor Error] {e}")
+            return False
+        
     def execute_website(self, url: str):
         webbrowser.open(url)
 

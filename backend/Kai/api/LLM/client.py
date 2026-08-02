@@ -29,9 +29,20 @@ class GeminiClient:
 
     def generate(self, prompt: str) -> str:
 
-        response = self.client.models.generate_content(
+        try:
+
+            response = self.client.models.generate_content(
             model=self.model,
             contents=prompt
-        )
+            )
 
-        return response.text
+            return response.text
+
+        except Exception as e:
+
+            print(f"[LLM ERROR] {e}")
+
+            return (
+                "I'm unable to access my AI services right now, Chief. "
+                "Please try again later."
+            )

@@ -23,8 +23,12 @@ class AutomationController:
         app = self._find_match(APPLICATIONS, target)
 
         if app:
-            self.executor.execute_application(app["command"])
-            return f"Opening {app['name']}, Chief."
+            success = self.executor.execute_application(app["command"])
+
+            if success:
+                return f"Opening {app['name']}, Chief."
+
+            return f"I couldn't open {app['name']}, Chief."
 
         website = self._find_match(WEBSITES, target)
 

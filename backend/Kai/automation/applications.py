@@ -23,7 +23,7 @@ APPLICATIONS = {
 
     "vscode": {
         "name": "Visual Studio Code",
-        "command": "code",
+        "command": r"C:\Users\PCM\AppData\Local\Programs\Microsoft VS Code\Code.exe",
         "close_process": "Code.exe",
         "aliases": [
             "vs code",

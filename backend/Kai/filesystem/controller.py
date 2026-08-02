@@ -2,6 +2,8 @@ from pathlib import Path
 
 from .manager import FileManager
 
+from brain.runtime_context import runtime_context
+
 
 class FilesystemController:
     """
@@ -12,11 +14,25 @@ class FilesystemController:
 
         self.manager = FileManager()
         self.last_results = []
+        
+    def _resolve_path(self, target: str) -> Path:
+
+        path = Path(target)
+
+        if path.is_absolute():
+            return path
+
+        if runtime_context.current_directory:
+            return Path(runtime_context.current_directory) / target
+
+        return Path.home() / "Documents" / target    
+        
 
     def search(self, target: str):
 
         results = self.manager.search(target)
         self.last_results = results
+        runtime_context.last_search = results
 
         if not results:
             return f"I couldn't find '{target}', Chief."
@@ -29,6 +45,16 @@ class FilesystemController:
         return response
 
     def open(self, target: str):
+        
+        if target.lower() == "it":
+
+            if runtime_context.last_file:
+
+                target = runtime_context.last_file
+
+            else:
+
+                return "I don't know what 'it' refers to yet, Chief."
 
         # User selected a previous search result
         if target.isdigit():
@@ -38,6 +64,13 @@ class FilesystemController:
             if 0 <= index < len(self.last_results):
 
                 path = self.last_results[index]
+                path_obj = Path(path)
+
+                if path_obj.is_dir():
+                    runtime_context.last_folder = str(path_obj)
+                    runtime_context.current_directory = str(path_obj)
+                else:
+                    runtime_context.last_file = str(path_obj)
 
                 if self.manager.open(path):
                     return f"Opening '{Path(path).name}', Chief."
@@ -47,96 +80,176 @@ class FilesystemController:
             return "That search result doesn't exist, Chief."
 
         # User entered a normal path
-        if self.manager.open(target):
-            return f"Opening '{Path(target).name}', Chief."
+        path = self._resolve_path(target)
+
+        if self.manager.open(str(path)):
+            path_obj = path
+
+            if path_obj.is_dir():
+                runtime_context.last_folder = str(path_obj)
+                runtime_context.current_directory = str(path_obj)
+            else:
+                runtime_context.last_file = str(path_obj)
+
+            return f"Opening '{path_obj.name}', Chief."
 
         return "I couldn't open that, Chief."
 
     def create_folder(self, folder_name: str):
 
-        documents = Path.home() / "Documents"
-        folder_path = documents / folder_name
+        base = (
+            Path(runtime_context.current_directory)
+            if runtime_context.current_directory
+            else Path.home() / "Documents"
+        )
+
+        folder_path = base / folder_name
+        
+        runtime_context.last_folder = str(folder_path)
 
         if self.manager.create_folder(str(folder_path)):
-            return f"Folder '{folder_name}' created in Documents, Chief."
 
-        return f"Folder '{folder_name}' already exists in Documents, Chief."
+            runtime_context.last_folder = str(folder_path)
+            runtime_context.current_directory = str(folder_path)
+
+            return f"Folder '{folder_name}' created in '{base.name}', Chief."
+
+        return f"Folder '{folder_name}' already exists in '{base.name}', Chief."
     
     def create_file(self, file_name: str):
 
-        documents = Path.home() / "Documents"
-        file_path = documents / file_name
+        if runtime_context.current_directory:
+            base = Path(runtime_context.current_directory)
+        else:
+            base = Path.home() / "Documents"
+
+        file_path = base / file_name
 
         if self.manager.create_file(str(file_path)):
-            return f"File '{file_name}' created in Documents, Chief."
 
-        return f"File '{file_name}' already exists in Documents, Chief."
+            runtime_context.last_file = str(file_path)
+            runtime_context.current_directory = str(base)
+
+            return f"File '{file_name}' created in '{base.name}', Chief."
+
+        return f"File '{file_name}' already exists in '{base.name}', Chief."
     
     def rename(self, target: str):
 
+        if target.startswith("it|"):
+
+            if runtime_context.last_file:
+
+                target = runtime_context.last_file + "|" + target[3:]
+
+            else:
+
+                return "I don't know what 'it' refers to yet, Chief."
+        
+        
         if "|" not in target:
             return "Please specify both file names, Chief."
 
         old_name, new_name = target.split("|", 1)
 
-        documents = Path.home() / "Documents"
+        old_path = self._resolve_path(old_name)
 
-        old_path = documents / old_name
-        new_path = documents / new_name
+        new_path = old_path.parent / new_name
 
         if self.manager.rename(str(old_path), str(new_path)):
-            return f"Renamed '{old_name}' to '{new_name}', Chief."
+
+            runtime_context.last_file = str(new_path)
+
+            return f"Renamed '{old_path.name}' to '{new_name}', Chief."
 
         return f"I couldn't find '{old_name}', Chief."
     
     def copy(self, target: str):
 
+        if target.startswith("it|"):
+
+            if runtime_context.last_file:
+
+                target = runtime_context.last_file + "|" + target[3:]
+
+            else:
+
+                return "I don't know what 'it' refers to yet, Chief."
+        
         if "|" not in target:
             return "Please specify both file names, Chief."
 
         source, destination = target.split("|", 1)
-
-        documents = Path.home() / "Documents"
  
-        source_path = documents / source
-        destination_path = documents / destination
+        source_path = self._resolve_path(source)
+        destination_path = self._resolve_path(destination)
 
         if self.manager.copy(str(source_path), str(destination_path)):
+            
             return f"Copied '{source}' to '{destination}', Chief."
 
         return f"I couldn't find '{source}', Chief."
     
     def move(self, target: str):
 
+        if target.startswith("it|"):
+
+            if runtime_context.last_file:
+
+                target = runtime_context.last_file + "|" + target[3:]
+
+            else:
+
+                return "I don't know what 'it' refers to yet, Chief."
+        
         if "|" not in target:
             return "Please specify both file names, Chief."
 
         source, destination = target.split("|", 1)
 
-        documents = Path.home() / "Documents"
-
-        source_path = documents / source
-        destination_path = documents / destination
+        source_path = self._resolve_path(source)
+        destination_path = self._resolve_path(destination)
 
         if self.manager.move(str(source_path), str(destination_path)):
+            
             return f"Moved '{source}' to '{destination}', Chief."
 
         return f"I couldn't find '{source}', Chief."
     
     def delete(self, target: str):
 
-        documents = Path.home() / "Documents"
-        target_path = documents / target
+        if target.lower() == "it":
 
+            if runtime_context.last_file:
+
+                target = runtime_context.last_file
+
+            else:
+
+                return "I don't know what 'it' refers to yet, Chief."
+        
+        target_path = self._resolve_path(target)
+        
+        
         if self.manager.delete(str(target_path)):
-            return f"Deleted '{target}', Chief."
+            runtime_context.last_file = None
+            return f"Deleted '{target_path.name}', Chief."
 
         return f"I couldn't find '{target}', Chief."
     
     def read(self, target: str):
+        
+        if target.lower() == "it":
 
-        documents = Path.home() / "Documents"
-        file_path = documents / target
+            if runtime_context.last_file:
+
+                target = runtime_context.last_file
+
+            else:
+
+                return "I don't know what 'it' refers to yet, Chief."
+
+        file_path = self._resolve_path(target)
 
         content = self.manager.read(str(file_path))
 

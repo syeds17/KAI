@@ -8,6 +8,12 @@ class Listener:
         self.recognizer = sr.Recognizer()
         self.microphone = sr.Microphone()
 
+        # Better defaults
+        self.recognizer.pause_threshold = 0.8
+        self.recognizer.phrase_threshold = 0.3
+        self.recognizer.non_speaking_duration = 0.5
+        self.recognizer.dynamic_energy_threshold = True
+
         print("🎤 Calibrating microphone...")
 
         with self.microphone as source:
@@ -18,28 +24,61 @@ class Listener:
 
     def listen(self):
 
-        with self.microphone as source:
+        attempts = 3
 
-            print("🎤 Listening...")
+        for _ in range(attempts):
 
-            audio = self.recognizer.listen(source)
+            with self.microphone as source:
 
-        try:
+                print("🎤 Listening...")
 
-            command = self.recognizer.recognize_google(audio).lower()
-            command = command.replace("guy", "kai")
-            command = command.replace("sky", "kai")
-            command = command.replace("ky", "kai")
-            command = command.replace("ki", "kai")
+                try:
 
-            print(f"Chief: {command}")
+                    audio = self.recognizer.listen(
+                        source,
+                        timeout=5,
+                        phrase_time_limit=10
+                    )
 
-            return command.lower()
+                except sr.WaitTimeoutError:
+                    continue
 
-        except sr.UnknownValueError:
+            try:
 
-            return None
+                command = self.recognizer.recognize_google(audio).lower()
 
-        except sr.RequestError:
+                command = self._normalize(command)
 
-            return None
+                print(f"Chief: {command}")
+
+                return command
+
+            except sr.UnknownValueError:
+
+                # Didn't understand, try again silently
+                continue
+
+            except sr.RequestError:
+
+                print("⚠ Speech recognition service unavailable.")
+
+                return None
+
+        return None
+
+    def _normalize(self, command: str):
+
+        replacements = {
+            "guy": "kai",
+            "sky": "kai",
+            "ky": "kai",
+            "ki": "kai",
+            "kay": "kai",
+            "bhai": "kai",
+            "ka": "kai",
+        }
+
+        for wrong, correct in replacements.items():
+            command = command.replace(wrong, correct)
+
+        return command.strip()
