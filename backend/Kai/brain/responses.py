@@ -19,5 +19,9 @@ RESPONSES = {
 
     "recall": [
         "Let me check my memory..."
+    ],
+    
+    "close": [
+        "Closing it, Chief."
     ]
 }

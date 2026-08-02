@@ -1,3 +1,4 @@
+import re
 import pyttsx3
 
 from .config import (
@@ -8,6 +9,9 @@ from .config import (
 
 
 class Speaker:
+    """
+    Handles KAI's text-to-speech.
+    """
 
     def __init__(self):
 
@@ -19,9 +23,18 @@ class Speaker:
         if VOICE_ID:
             self.engine.setProperty("voice", VOICE_ID)
 
+    def clean_text(self, text: str) -> str:
+        """
+        Remove emojis and unsupported symbols before speaking.
+        """
+
+        return re.sub(r"[^\w\s.,!?':-]", "", text)
+
     def say(self, text: str):
 
         print(f"KAI 🔊 {text}")
 
-        self.engine.say(text)
+        spoken_text = self.clean_text(text)
+
+        self.engine.say(spoken_text)
         self.engine.runAndWait()

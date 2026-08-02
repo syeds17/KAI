@@ -16,16 +16,29 @@ voice = VoiceController()
 while True:
 
     command = console.input(
-        "\n[bold cyan]Chief (type / voice / exit) > [/bold cyan]"
-    ).strip().lower()
+        "\n[bold cyan]Chief > [/bold cyan]"
+    ).strip()
 
-    if command == "exit":
+    if command.lower() in ["exit", "quit"]:
         console.print("[yellow]Goodbye, Chief.")
         break
 
-    if command == "voice":
+    if command == "":
+
+        if not voice.wait_for_wake_word():
+
+            console.print("[yellow]Wake word not detected.[/yellow]")
+
+            continue
 
         spoken_command = voice.listen()
+        
+        if spoken_command and spoken_command.lower() in ["exit", "quit"]:
+
+            console.print("[yellow]Goodbye, Chief.")
+            voice.speak("Goodbye, Chief.")
+
+            break
 
         if not spoken_command:
             console.print("[red]I couldn't hear you, Chief.")
