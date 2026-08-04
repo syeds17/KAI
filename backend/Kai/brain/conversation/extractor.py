@@ -16,6 +16,9 @@ class SlotExtractor:
 
         if slot == "number":
             return self.extract_number(text)
+        
+        if slot == "target":
+            return self.extract_name(text)
 
         return None
 

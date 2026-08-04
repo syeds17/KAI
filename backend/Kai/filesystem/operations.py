@@ -78,3 +78,57 @@ class FileOperations:
             shutil.rmtree(item)
 
         return True
+    
+    def exists(self, path: str):
+
+        return Path(path).exists()
+    
+    def write(self, path: str, content: str):
+
+        file = Path(path)
+
+        file.parent.mkdir(parents=True, exist_ok=True)
+        
+        file.touch(exist_ok=True)
+
+        with open(file, "w", encoding="utf-8") as f:
+            f.write(content)
+
+        return True
+    
+    def append(self, path: str, content: str):
+
+        file = Path(path)
+
+        file.parent.mkdir(parents=True, exist_ok=True)
+
+        with open(file, "a", encoding="utf-8") as f:
+            f.write("\n" + content)
+
+        return True
+    
+    def clear(self, path: str):
+
+        file = Path(path)
+
+        if not file.exists():
+            return False
+
+        file.write_text("", encoding="utf-8")
+
+        return True
+    
+    def replace(self, path: str, old: str, new: str):
+
+        file = Path(path)
+
+        if not file.exists():
+            return False
+
+        content = file.read_text(encoding="utf-8")
+
+        content = content.replace(old, new)
+
+        file.write_text(content, encoding="utf-8")
+
+        return True

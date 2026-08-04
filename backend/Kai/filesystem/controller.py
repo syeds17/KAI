@@ -268,3 +268,96 @@ class FilesystemController:
             content = content[:MAX_CHARS] + "\n\n...(Content truncated)"
 
         return f"Contents of '{target}':\n\n{content}"
+    
+    def write(self, target: str, content: str):
+
+        if target.lower() == "it":
+
+            if runtime_context.last_file:
+               target = runtime_context.last_file
+            else:
+               return "I don't know what 'it' refers to yet, Chief."
+
+        file_path = self._resolve_path(target)
+
+        if self.manager.write(str(file_path), content):
+
+            runtime_context.last_file = str(file_path)
+
+            return f"I've written to '{file_path.name}', Chief."
+
+        return f"I couldn't write to '{target}', Chief."
+    
+    def append(self, target: str, content: str):
+
+        if target.lower() == "it":
+
+            if runtime_context.last_file:
+                target = runtime_context.last_file
+            else:
+                return "I don't know what 'it' refers to yet, Chief."
+
+        file_path = self._resolve_path(target)
+
+        if self.manager.append(str(file_path), content):
+
+            runtime_context.last_file = str(file_path)
+
+            return f"I've appended to '{file_path.name}', Chief."
+
+        return f"I couldn't append to '{target}', Chief."
+    
+    def replace(self, target: str):
+
+        parts = target.split("|")
+
+        if len(parts) != 3:
+            return "Please specify the file, old text, and new text, Chief."
+
+        file_name, old_text, new_text = parts
+
+        if file_name.lower() == "it":
+
+            if runtime_context.last_file:
+               file_name = runtime_context.last_file
+            else:
+               return "I don't know what 'it' refers to yet, Chief."
+
+        file_path = self._resolve_path(file_name)
+
+        success = self.manager.replace(
+            str(file_path),
+            old_text,
+            new_text
+        )
+        
+        if success:
+
+            runtime_context.last_file = str(file_path)
+
+            return (
+                f"Replaced '{old_text}' with "
+                f"'{new_text}' in '{file_path.name}', Chief."
+            )
+            
+
+        return f"I couldn't update '{file_name}', Chief."
+    
+    def clear(self, target: str):
+
+        if target.lower() == "it":
+
+            if runtime_context.last_file:
+                target = runtime_context.last_file
+            else:
+                return "I don't know what 'it' refers to yet, Chief."
+
+        file_path = self._resolve_path(target)
+
+        if self.manager.clear(str(file_path)):
+
+            runtime_context.last_file = str(file_path)
+
+            return f"I've cleared '{file_path.name}', Chief."
+
+        return f"I couldn't clear '{target}', Chief."

@@ -18,5 +18,4 @@ class ConversationState:
         if command.action == "create_file":
             self.last_file = command.target
 
-
 conversation_state = ConversationState()

@@ -12,9 +12,39 @@ class SlotFiller:
         if not pending.active():
             return
 
-        if "name" in pending.missing():
+        for slot in pending.missing():
 
-            name = self.extractor.extract_name(command.raw)
+            if slot == "name":
 
-            if name:
-                pending.fill("name", name)
+                value = self.extractor.extract_name(command.raw)
+
+            elif slot == "target":
+
+                value = self.extractor.extract_name(command.raw)
+
+            elif slot == "content":
+
+                value = command.raw.strip()
+
+            elif slot == "folder":
+
+                value = self.extractor.extract_name(command.raw)
+
+            elif slot == "extension":
+
+                value = self.extractor.extract_name(command.raw)
+
+            elif slot == "old":
+
+                value = self.extractor.extract_name(command.raw)
+
+            elif slot == "new":
+
+                value = self.extractor.extract_name(command.raw)
+
+            else:
+
+                value = None
+
+            if value:
+                pending.fill(slot, value)

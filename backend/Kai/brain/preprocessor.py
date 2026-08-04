@@ -46,11 +46,11 @@ class Preprocessor:
             "you",
 
             "for",
-            "to",
+            
             "of",
             "on",
-            "in",
-            "at",
+            
+            
 
             "is",
             "are",

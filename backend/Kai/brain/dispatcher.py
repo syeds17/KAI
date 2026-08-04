@@ -54,5 +54,27 @@ class Dispatcher:
         
         if command.action == "read":
             return self.filesystem.read(command.target)
+        
+        if command.action == "write":
+            return self.filesystem.write(
+                command.target,
+                command.content
+            )
+
+        if command.action == "append":
+            return self.filesystem.append(
+               command.target,
+               command.content
+          )
+
+        if command.action == "replace":
+            return self.filesystem.replace(
+                command.target
+           )
+
+        if command.action == "clear":
+            return self.filesystem.clear(
+                command.target
+           )
 
         return self.processor.process(command.raw)

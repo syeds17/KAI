@@ -60,3 +60,27 @@ class FileManager:
     def read(self, path: str):
 
         return self.reader.read(path)
+    
+    def write(self, path: str, content: str):
+
+        return self.operations.write(path, content)
+
+
+    def append(self, path: str, content: str):
+
+        return self.operations.append(path, content)
+
+
+    def replace(self, path: str, old: str, new: str):
+
+        return self.operations.replace(path, old, new)
+
+
+    def clear(self, path: str):
+
+        return self.operations.clear(path)
+
+
+    def exists(self, path: str):
+
+        return self.operations.exists(path)

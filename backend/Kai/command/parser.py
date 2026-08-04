@@ -1,5 +1,6 @@
 from .command import Command
 from .actions import ACTIONS
+from .file_parser import FileCommandParser
 
 
 ACTION_ALIASES = {
@@ -11,6 +12,10 @@ ACTION_ALIASES = {
 
 class CommandParser:
 
+    def __init__(self):
+
+        self.file_parser = FileCommandParser()
+
     def parse(self, text: str) -> Command:
 
         words = text.lower().strip().split()
@@ -19,6 +24,15 @@ class CommandParser:
             return Command("unknown", "", text)
 
         action = words[0]
+
+        # Delegate file editing commands
+        if action in (
+            "write",
+            "append",
+            "replace",
+            "clear",
+        ):
+            return self.file_parser.parse(text)
 
         # Handle multi-word commands
         if len(words) >= 2:
@@ -34,13 +48,16 @@ class CommandParser:
         # Handle rename
         if words[0] == "rename":
             action = "rename"
-        
+
+        # Handle copy
         if words[0] == "copy":
             action = "copy"
-        
+
+        # Handle move
         if words[0] == "move":
             action = "move"
-            
+
+        # Handle delete
         if words[0] == "delete":
             action = "delete"
 
@@ -69,6 +86,7 @@ class CommandParser:
                 destination = " ".join(words[index + 1:])
 
                 target = f"{source}|{destination}"
+
         else:
 
             target = " ".join(words[1:])
