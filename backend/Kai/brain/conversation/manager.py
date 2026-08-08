@@ -18,12 +18,15 @@ class ConversationManager:
         self.state = conversation_state
 
     def handle(self, command: Command):
-
-        # Resolve words like:
-        # "it", "there", "inside it"
+        
         command = self.context.resolve(command, self.pending)
 
         if self.pending.active():
+            
+            if command.action != "unknown":
+                self.pending.clear()
+                self.state.remember(command)
+                return command, None
 
             for slot in self.pending.missing():
 
@@ -91,6 +94,10 @@ class ConversationManager:
 
         if command.action == "append":
 
+            if command.content and command.target:
+                self.state.remember(command)
+                return command, None
+            
             self.pending.set(
                 "append",
                {
@@ -102,6 +109,10 @@ class ConversationManager:
             return None, self._next_question()
 
         if command.action == "clear":
+            
+            if command.content and command.target:
+                self.state.remember(command)
+                return command, None
 
             self.pending.set(
                 "clear",
@@ -119,6 +130,10 @@ class ConversationManager:
             target = parts[0] if len(parts) > 0 else None
             old = parts[1] if len(parts) > 1 else None
             new = parts[2] if len(parts) > 2 else None
+            
+            if command.content and command.target:
+                self.state.remember(command)
+                return command, None
 
             self.pending.set(
                 "replace",

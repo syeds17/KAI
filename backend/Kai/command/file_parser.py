@@ -31,10 +31,16 @@ class FileCommandParser:
                     raw=original
                 )
 
+            content = text[6:].strip()
+
+            for ending in (" in", " into", " to"):
+                if content.endswith(ending):
+                    content = content[:-len(ending)].strip()
+                    
             return Command(
                 action="write",
                 target="",
-                content=text[6:].strip(),
+                content=content,
                 raw=original
             )
 
@@ -56,11 +62,17 @@ class FileCommandParser:
                     content=match.group(1).strip(),
                     raw=original
                 )
+                
+            content = text[7:].strip()
+
+            for ending in (" in", " into", " to"):
+                if content.endswith(ending):
+                    content = content[:-len(ending)].strip()   
 
             return Command(
                 action="append",
                 target="",
-                content=text[7:].strip(),
+                content=content,
                 raw=original
             )
 

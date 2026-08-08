@@ -6,17 +6,40 @@ class FileReader:
     """
     Reads different file types.
     """
+    
+    def resolve_file(self, file: Path):
+
+        if file.exists():
+            return file
+
+        extensions = [
+            ".txt",
+            ".md",
+            ".pdf",
+            ".json",
+            ".csv",
+            ".py"
+        ]
+
+        for ext in extensions:
+
+            candidate = file.with_suffix(ext)
+
+            if candidate.exists():
+                return candidate
+
+        return None
 
     def read(self, path: str):
 
-        file = Path(path)
+        file = self.resolve_file(Path(path))
 
-        if not file.exists():
+        if file is None:
             return None
 
         extension = file.suffix.lower()
 
-        if extension == ".txt":
+        if extension in ("", ".txt"):
             return self.read_txt(file)
 
         if extension == ".md":
