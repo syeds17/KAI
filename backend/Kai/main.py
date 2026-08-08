@@ -16,58 +16,78 @@ voice = VoiceController()
 while True:
 
     # -----------------------------------------
-    # Conversation Mode
-    # -----------------------------------------
-    active, timed_out = voice.conversation_active()
-    
-    if active:
-
-        spoken_command = voice.listen()
-
-        if not spoken_command:
-            continue
-
-        voice.refresh_conversation()
-    
-    elif timed_out:
-
-        console.print("[yellow]Standing by, Chief.[/yellow]")
-        voice.speak("Standing by, Chief.")
-    # -----------------------------------------
-    # Wake Word Mode
+    # WAKE WORD MODE
     # -----------------------------------------
 
-    else:
+    if not voice.conversation_active()[0]:
 
         console.print("\n[cyan]🎤 Waiting for wake word...[/cyan]")
 
-        if not voice.wait_for_wake_word():
+        spoken_command = voice.wait_for_wake_word()
+
+        if spoken_command is None:
             continue
 
         voice.start_conversation()
 
+        # Wake word only
+        if not spoken_command:
+
+            spoken_command = voice.listen()
+
+            if not spoken_command:
+                continue
+
+    # -----------------------------------------
+    # CONVERSATION MODE
+    # -----------------------------------------
+
+    else:
+
+        active, timed_out = voice.conversation_active()
+
+        if timed_out:
+
+            console.print("[yellow]Standing by, Chief.[/yellow]")
+            voice.speak("Standing by, Chief.")
+            continue
+
         spoken_command = voice.listen()
 
         if not spoken_command:
             continue
 
+        spoken_command = spoken_command.lower().strip()
+
+        if voice.should_exit_conversation(spoken_command):
+
+            voice.stop_conversation()
+
+            console.print("[yellow]Standing by, Chief.[/yellow]")
+            voice.speak("Standing by, Chief.")
+
+            continue
+
+        voice.refresh_conversation()
+
+    # -----------------------------------------
+    # GLOBAL EXIT
+    # -----------------------------------------
+
     spoken_command = spoken_command.lower().strip()
-    
-    if voice.should_exit_conversation(spoken_command):
+
+    if spoken_command == "exit":
 
         voice.stop_conversation()
 
-        console.print("[yellow]Standing by, Chief.[/yellow]")
-
-        voice.speak("Standing by, Chief.")
-
-        continue
-
-    if spoken_command in ["exit", "quit"]:
-
-        console.print("[yellow]Goodbye, Chief.")
+        console.print("[yellow]Goodbye, Chief.[/yellow]")
         voice.speak("Goodbye, Chief.")
+
         break
+
+    # -----------------------------------------
+    # ROUTER
+    # -----------------------------------------
 
     response = router.route(spoken_command)
 

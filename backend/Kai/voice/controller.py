@@ -25,14 +25,19 @@ class VoiceController:
     def wait_for_wake_word(self):
 
         text = self.listen()
-
-        if self.wakeword.detected(text):
-
+        
+        if not text:
+            return None
+        
+        command = self.wakeword.extract_command(text)
+        
+        if command is not None:
+            
             self.speak("Yes, Chief.")
-
-            return True
-
-        return False
+            
+            return command
+        
+        return None
     
     def conversation_active(self):
 

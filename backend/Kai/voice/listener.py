@@ -67,15 +67,19 @@ class Listener:
         return None
 
     def _normalize(self, command: str):
+        
+        command = command.lower().strip()
 
         replacements = {
-            "guy": "kai",
-            "sky": "kai",
-            "ky": "kai",
-            "ki": "kai",
-            "kay": "kai",
-            "bhai": "kai",
-            "ka": "kai",
+           "kaii": "kai",
+           "kahi": "kai",
+           "guy": "kai",
+           "sky": "kai",
+           "ky": "kai",
+           "ki": "kai",
+           "kay": "kai",
+           "bhai": "kai",
+           "ka": "kai",
         }
 
         for wrong, correct in replacements.items():

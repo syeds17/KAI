@@ -1,22 +1,41 @@
+import re
+
+
 class WakeWordDetector:
     """
-    Detects KAI's wake word.
+    Detects KAI's wake word and extracts any command
+    spoken immediately after it.
     """
 
     def __init__(self):
 
-        self.wake_words = [
-            "kai",
-            "okay kai",
-            "hey kai",
-            "hi kai"
+        self.wake_patterns = [
+            r"\bokay\s+kai+\b",
+            r"\bhey\s+kai+\b",
+            r"\bhi\s+kai+\b",
+            r"\bkai+\b",
+            r"\bkay+\b",
         ]
 
-    def detected(self, text: str) -> bool:
+    def extract_command(self, text: str):
 
         if not text:
-            return False
+            return None
 
         text = text.lower().strip()
 
-        return any(word in text for word in self.wake_words)
+        for pattern in self.wake_patterns:
+
+            match = re.search(pattern, text)
+
+            if match:
+
+                command = text[match.end():].strip()
+
+                return command
+
+        return None
+
+    def detected(self, text: str):
+
+        return self.extract_command(text) is not None
