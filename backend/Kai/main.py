@@ -56,6 +56,14 @@ while True:
 
         if not spoken_command:
             continue
+        
+        extracted = voice.wakeword.extract_command(spoken_command)
+        
+        if extracted is not None:
+            spoken_command = extracted
+            
+            if not spoken_command:
+                continue
 
         spoken_command = spoken_command.lower().strip()
 

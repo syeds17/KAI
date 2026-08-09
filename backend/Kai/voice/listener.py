@@ -1,5 +1,5 @@
 import speech_recognition as sr
-
+import re
 
 class Listener:
 
@@ -84,6 +84,10 @@ class Listener:
         }
 
         for wrong, correct in replacements.items():
-            command = command.replace(wrong, correct)
+             command = re.sub(
+                rf"\b{re.escape(wrong)}\b",
+                correct,
+                command
+            )
 
         return command.strip()

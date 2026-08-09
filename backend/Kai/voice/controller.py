@@ -37,13 +37,13 @@ class VoiceController:
         
         command = self.wakeword.extract_command(text)
         
-        if command is not None:
+        if command is None:
             
-            self.speak("Yes, Chief.")
-            
-            return command
+            return None
         
-        return None
+        self.speak("Yes, Chief.")
+        
+        return command
     
     def conversation_active(self):
 
