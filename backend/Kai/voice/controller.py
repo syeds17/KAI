@@ -14,9 +14,12 @@ class VoiceController:
         self.wakeword = WakeWordDetector()
         self.conversation = ConversationManager()
 
-    def listen(self):
+    def listen(self, timeout=5, phrase_time_limit=10):
 
-        return self.listener.listen()
+        return self.listener.listen(
+            timeout=timeout, 
+            phrase_time_limit=phrase_time_limit
+        )
 
     def speak(self, text: str):
 
@@ -24,7 +27,10 @@ class VoiceController:
 
     def wait_for_wake_word(self):
 
-        text = self.listen()
+        text = self.listen(
+            timeout=3,
+            phrase_time_limit=5
+        )
         
         if not text:
             return None

@@ -22,22 +22,23 @@ class Listener:
 
         print("✅ Microphone ready, Chief.")
 
-    def listen(self):
+    def listen(self, timeout=5, phrase_time_limit=10):
 
-        attempts = 3
+        attempts = 2
 
         for _ in range(attempts):
 
             with self.microphone as source:
 
-                print("🎤 Listening...")
+                if _ == 0:
+                    print("🎤 Listening...")
 
                 try:
 
                     audio = self.recognizer.listen(
                         source,
-                        timeout=5,
-                        phrase_time_limit=10
+                        timeout=timeout,
+                        phrase_time_limit=phrase_time_limit 
                     )
 
                 except sr.WaitTimeoutError:
