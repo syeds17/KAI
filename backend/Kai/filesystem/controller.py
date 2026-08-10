@@ -104,13 +104,10 @@ class FilesystemController:
         )
 
         folder_path = base / folder_name
-        
-        runtime_context.last_folder = str(folder_path)
 
         if self.manager.create_folder(str(folder_path)):
 
             runtime_context.last_folder = str(folder_path)
-            runtime_context.current_directory = str(folder_path)
 
             return f"Folder '{folder_name}' created in '{base.name}', Chief."
 
@@ -118,9 +115,27 @@ class FilesystemController:
     
     def create_file(self, file_name: str):
 
-        if runtime_context.current_directory:
+        location = None
+
+    # Handle contextual location: "cat there"
+        if "|" in file_name:
+
+            file_name, location = file_name.rsplit("|", 1)
+
+            file_name = file_name.strip()
+            location = location.strip().lower()
+
+    # Decide where the file should be created
+        if location == "there" and runtime_context.last_folder:
+
+            base = Path(runtime_context.last_folder)
+
+        elif runtime_context.current_directory:
+
             base = Path(runtime_context.current_directory)
+
         else:
+
             base = Path.home() / "Documents"
 
         file_path = base / file_name
@@ -128,7 +143,6 @@ class FilesystemController:
         if self.manager.create_file(str(file_path)):
 
             runtime_context.last_file = str(file_path)
-            runtime_context.current_directory = str(base)
 
             return f"File '{file_name}' created in '{base.name}', Chief."
 

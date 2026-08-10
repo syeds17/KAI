@@ -73,6 +73,16 @@ class CommandParser:
         if action in ("create_folder", "create_file"):
 
             target = " ".join(words[2:])
+            
+            if action == "create_file":
+
+                if target.endswith(" in there"):
+
+                    target = target[:-8].strip() + "|there"
+
+                elif target.endswith(" there"):
+
+                    target = target[:-6].strip() + "|there"
 
         elif action in ("rename", "copy", "move"):
 
